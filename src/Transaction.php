@@ -1,8 +1,7 @@
 <?php  
 namespace Armincms\Arminpay; 
 
-use Armin\Models\Model; 
-use Illuminate\Database\Eloquent\SoftDeletes;  
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};   
 use Armincms\Arminpay\Contracts\Tradable; 
 use Illuminate\Http\Request;
 
