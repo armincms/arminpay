@@ -25,7 +25,7 @@ class CreateOrdersTable extends Migration
             $table->enum('status', [
                 Order::PENDING, Order::CANCELDE, Order::FAILED, Order::SUCCESS
             ])->default(Order::PENDING);
-            $table->json('extra')->default('[]');
+            $table->json('extra')->nullable();
             $table->timestamps();
             $table->softDeletes(); 
         });

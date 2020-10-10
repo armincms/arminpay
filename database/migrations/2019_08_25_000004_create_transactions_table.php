@@ -26,7 +26,7 @@ class CreateTransactionsTable extends Migration
             $table->enum('status', [
                 Order::PENDING, Order::CANCELDE, Order::FAILED, Order::SUCCESS
             ])->default(Order::PENDING);
-            $table->json('extra')->default('[]');
+            $table->json('extra')->nullable();
             $table->timestamp('payment_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
