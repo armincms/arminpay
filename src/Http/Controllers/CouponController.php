@@ -1,7 +1,7 @@
 <?php 
 namespace ComponentArminpay\Http\Controllers;
 
-use Armin\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Core\Crud\Resource;
 use ComponentArminpay\Coupon;

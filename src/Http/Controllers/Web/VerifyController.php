@@ -1,7 +1,7 @@
 <?php 
 namespace Armincms\Arminpay\Http\Controllers\Web;
 
-use Armin\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Armincms\Arminpay\Order;
 use Armincms\Arminpay\Transaction;
