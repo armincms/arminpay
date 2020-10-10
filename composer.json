@@ -1,0 +1,39 @@
+{
+    "name": "armincms/arminpay",
+    "description": "The armincms arminpay package.",
+    "license": "MIT",
+    "homepage": "https://armincms.com",
+    "support": { 
+    },
+    "authors": [
+        {
+            "name": "Ismail Zare",
+            "email": "zarehesmail@gmail.com"
+        }
+    ],
+    "require": { 
+    },
+    "autoload": {
+        "psr-4": {
+            "Armincms\\Arminpay\\": "src"
+        },
+        "files" : [
+            "src/helpers.php"
+        ]
+    },
+    "extra": { 
+        "laravel" : {
+            "providers" : [ 
+                "Armincms\\Arminpay\\ArminpayServiceProvider"
+            ],
+            "aliases" : {   
+            }
+        }
+    },
+    "suggest": { 
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
+}
