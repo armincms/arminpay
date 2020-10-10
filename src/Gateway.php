@@ -1,7 +1,7 @@
 <?php  
 namespace Armincms\Arminpay; 
 
-use Armin\Models\Model;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes}; 
 use Core\Language\Concerns\HasTranslation; 
 use Core\Crud\Concerns\HasCustomImage;
 use Core\Language\Contracts\Multilingual; 
