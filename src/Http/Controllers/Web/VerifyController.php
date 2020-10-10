@@ -1,10 +1,10 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers\Web;
+namespace Armincms\Arminpay\Http\Controllers\Web;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Component\Arminpay\Order;
-use Component\Arminpay\Transaction;
+use Armincms\Arminpay\Order;
+use Armincms\Arminpay\Transaction;
 
 
 class VerifyController extends Controller

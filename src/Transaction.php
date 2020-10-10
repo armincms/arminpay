@@ -1,9 +1,9 @@
 <?php  
-namespace Component\Arminpay; 
+namespace Armincms\Arminpay; 
 
 use Armin\Models\Model; 
 use Illuminate\Database\Eloquent\SoftDeletes;  
-use Component\Arminpay\Contracts\Tradable; 
+use Armincms\Arminpay\Contracts\Tradable; 
 use Illuminate\Http\Request;
 
 class Transaction extends Model implements Tradable 

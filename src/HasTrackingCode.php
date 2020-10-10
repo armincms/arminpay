@@ -1,5 +1,5 @@
 <?php  
-namespace Component\Arminpay; 
+namespace Armincms\Arminpay; 
  
 trait HasTrackingCode 
 {  

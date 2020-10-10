@@ -1,5 +1,5 @@
 <?php 
-namespace Component\Arminpay\Contracts;
+namespace Armincms\Arminpay\Contracts;
 
 
 interface Manager

@@ -1,5 +1,5 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers\Web;
+namespace Armincms\Arminpay\Http\Controllers\Web;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;

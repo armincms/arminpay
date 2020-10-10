@@ -1,5 +1,5 @@
 <?php 
-namespace Component\Arminpay\Forms; 
+namespace Armincms\Arminpay\Forms; 
 
 use Core\Crud\Forms\MultilingualResourceForm;
 use Core\Crud\Concerns\HasImage;   

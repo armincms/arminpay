@@ -1,12 +1,12 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers;
+namespace Armincms\Arminpay\Http\Controllers;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Core\Crud\Resource;
-use Component\Arminpay\Order;
-use Component\Arminpay\Forms\OrderForm;
-use Component\Arminpay\Tables\OrderTransformer;
+use Armincms\Arminpay\Order;
+use Armincms\Arminpay\Forms\OrderForm;
+use Armincms\Arminpay\Tables\OrderTransformer;
 use Core\Crud\Contracts\PublicatableResource;
 
 class OrderController extends Resource implements PublicatableResource

@@ -1,12 +1,12 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers;
+namespace Armincms\Arminpay\Http\Controllers;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Core\Crud\MultilingualResource;
-use Component\Arminpay\Arminpay;
-use Component\Arminpay\Forms\ArminpayForm;
-use Component\Arminpay\Tables\ArminpayTransformer;
+use Armincms\Arminpay\Arminpay;
+use Armincms\Arminpay\Forms\ArminpayForm;
+use Armincms\Arminpay\Tables\ArminpayTransformer;
 use Core\Crud\Contracts\PublicatableResource;
 
 class ArminpayController extends MultilingualResource implements PublicatableResource

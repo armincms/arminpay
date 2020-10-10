@@ -1,12 +1,12 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers;
+namespace Armincms\Arminpay\Http\Controllers;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Core\Crud\MultilingualResource;
-use Component\Arminpay\Gateway;
-use Component\Arminpay\Forms\GatewayForm;
-use Component\Arminpay\Tables\GatewayTransformer;
+use Armincms\Arminpay\Gateway;
+use Armincms\Arminpay\Forms\GatewayForm;
+use Armincms\Arminpay\Tables\GatewayTransformer;
 use Core\Crud\Contracts\PublicatableResource;
 use Core\Crud\Contracts\Compact;
 

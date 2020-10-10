@@ -1,8 +1,8 @@
 <?php 
-namespace Component\Arminpay; 
+namespace Armincms\Arminpay; 
 
-use Component\Arminpay\Contracts\Gateway;  
-use Component\Arminpay\Contracts\Tradable;  
+use Armincms\Arminpay\Contracts\Gateway;  
+use Armincms\Arminpay\Contracts\Tradable;  
 use Illuminate\Support\Str;
 
 abstract class Gate implements Gateway
@@ -17,7 +17,7 @@ abstract class Gate implements Gateway
 	/**
 	 * PAyment amount.
 	 * 
-	 * @var \Component\Arminpay\Contracs\Tradable
+	 * @var \Armincms\Arminpay\Contracs\Tradable
 	 */
 	protected $transaction; 
 

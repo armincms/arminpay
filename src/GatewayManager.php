@@ -1,8 +1,8 @@
 <?php
-namespace Component\Arminpay;
+namespace Armincms\Arminpay;
 
-use Component\Arminpay\Contracts\Manager;
-use Component\Arminpay\Contracts\Gateway; 
+use Armincms\Arminpay\Contracts\Manager;
+use Armincms\Arminpay\Contracts\Gateway; 
 
 
 class GatewayManager implements Manager

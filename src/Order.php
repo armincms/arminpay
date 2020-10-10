@@ -1,5 +1,5 @@
 <?php  
-namespace Component\Arminpay; 
+namespace Armincms\Arminpay; 
 
 use Armin\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes; 
@@ -15,7 +15,7 @@ use Core\HttpSite\Concerns\HasMultilingualPermalink as Permalink;
 use Core\HttpSite\Contracts\Hitsable;
 use Core\HttpSite\Concerns\Visiting;
 use Core\HttpSite\Concerns\IntractsWithSite; 
-use Component\Arminpay\Contracts\Order as OrderContract;
+use Armincms\Arminpay\Contracts\Order as OrderContract;
 
 class Order extends Model implements Ownable, OrderContract, Publicatable
 { 

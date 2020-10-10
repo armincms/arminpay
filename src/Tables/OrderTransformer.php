@@ -1,5 +1,5 @@
 <?php 
-namespace Component\Arminpay\Tables;
+namespace Armincms\Arminpay\Tables;
 
 use Core\Crud\Tables\ResourceTransformer; 
 

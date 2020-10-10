@@ -1,8 +1,8 @@
 <?php
-namespace Component\Arminpay;
+namespace Armincms\Arminpay;
 
-use Component\Arminpay\Contracts\Manager;
-use Component\Arminpay\Contracts\Orderable;
+use Armincms\Arminpay\Contracts\Manager;
+use Armincms\Arminpay\Contracts\Orderable;
 use Illuminate\Support\Collection;
 
 

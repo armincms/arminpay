@@ -1,9 +1,9 @@
 <?php 
-namespace Component\Arminpay\Components;
+namespace Armincms\Arminpay\Components;
  
 use Illuminate\Http\Request; 
 use Core\HttpSite\Component as BaseComponent;
-use Component\Arminpay\Order;
+use Armincms\Arminpay\Order;
 use Core\HttpSite\Contracts\Resourceable;
 use Core\HttpSite\Concerns\IntractsWithResource;
 use Core\HttpSite\Concerns\IntractsWithLayout;

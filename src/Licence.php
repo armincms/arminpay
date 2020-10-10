@@ -1,9 +1,9 @@
 <?php 
-namespace Component\Arminpay;
+namespace Armincms\Arminpay;
 
-use Component\Arminpay\Contracts\Orderable;
-use Component\Arminpay\Contracts\Product;
-use Component\Arminpay\Product as Model; 
+use Armincms\Arminpay\Contracts\Orderable;
+use Armincms\Arminpay\Contracts\Product;
+use Armincms\Arminpay\Product as Model; 
 
 class Licence implements Orderable
 { 

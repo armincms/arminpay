@@ -1,9 +1,9 @@
 <?php 
-namespace Component\Arminpay\Http\Controllers\Web;
+namespace Armincms\Arminpay\Http\Controllers\Web;
 
 use Armin\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Component\Arminpay\Order;
+use Armincms\Arminpay\Order;
 
 
 class OrderCreateController extends Controller
@@ -80,7 +80,7 @@ class OrderCreateController extends Controller
      * Resolve orderable instance.
      * 
      * @param  string $name 
-     * @return \Component\Arminpay\Contracts\Orderable       
+     * @return \Armincms\Arminpay\Contracts\Orderable       
      */
     public function resolveOrderable(string $name)
     {

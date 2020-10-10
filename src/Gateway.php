@@ -1,5 +1,5 @@
 <?php  
-namespace Component\Arminpay; 
+namespace Armincms\Arminpay; 
 
 use Armin\Models\Model;
 use Core\Language\Concerns\HasTranslation; 

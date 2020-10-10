@@ -1,7 +1,7 @@
 <?php 
-namespace Component\Arminpay;
+namespace Armincms\Arminpay;
 
-use Component\Arminpay\Contracts\Product as ProductContract; 
+use Armincms\Arminpay\Contracts\Product as ProductContract; 
 use Illuminate\Support\Collection; 
 
 
