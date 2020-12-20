@@ -1,104 +1,115 @@
-<?php  
-namespace Armincms\Arminpay; 
+<?php
 
-use Illuminate\Database\Eloquent\{Model, SoftDeletes};   
-use Armincms\Arminpay\Contracts\Tradable; 
-use Illuminate\Http\Request;
+namespace Armincms\Arminpay;
 
-class Transaction extends Model implements Tradable 
-{ 
-	use SoftDeletes;
+use Armincms\Arminpay\Contracts\Billable;
+use Armincms\Arminpay\Models\Gateway;
+
+class Transaction 
+{
+    /**
+     * The request isntance.
+     * 
+     * @var \Illuminate\Http\Reqeust
+     */
+    protected static $request;
+
+    /**
+     * The billable isntance.
+     * 
+     * @var \Armincms\Arminpay\Contracts\Billable
+     */
+    protected static $billable;
+
+    /**
+     * The transaction isntance.
+     * 
+     * @var \Armincms\Arminpay\Models\Transaction
+     */
+    protected static $transaction;
  
-	protected $guarded = [];
-	protected $casts = [
-		'payment_date' => 'datetime',
-		'extra' => 'json',
-	];   
+    /**
+     * The transaction isntance.
+     * 
+     * @param \Illuminate\Http\Reqeust
+     * @param \Armincms\Arminpay\Contracts\Billable
+     */
+    private function __construct(Request $request, Billable $billable)
+    { 
+        $this->request = $request;
+        $this->billable = $billable;
 
-	public function amount(): float
-	{
-		return floatval($this->amount);
-	} 
+        $this->initialize();
+    }
+ 
+    /**
+     * The transaction isntance.
+     * 
+     * @param \Illuminate\Http\Reqeust
+     * @param \Armincms\Arminpay\Contracts\Billable
+     */
+    private function for(Request $request, Billable $billable)
+    { 
+        return new static($request, $billable);
+    } 
 
-	public function currency(): string
-	{
-		return (string) $this->currency;
-	} 
+    /**
+     * Initialize Transaction isntance.
+     * 
+     * @return $this
+     */
+    public function initialize()
+    { 
+        $this->$transaction = tap(new Models\Transaction, function($transaction){ 
+            $transaction->forceFill([
+                'amount'    => $this->billable->amount(),
+                'currency'  => $this->billable->currency(),
+                'callback'  => $this->billable->callback(), 
+            ]);
 
-	public function callback() : string
-	{
-		return route('arminpay.transaction.verify', $this->trackingCode());
-	} 
+            $transaction->billable()->associate($this->billable);
+        });
 
-	public function verifyPath()
-	{
-		return route('arminpay.transaction.verify', $this);
-	}
+        return $this;
+    }
 
-	public function referenceTo(string $referenceNumber) : Tradable
-	{
-		$this->reference_number = $referenceNumber;
+    /**
+     * Initialize a transaction for the given Billable resource.
+     * 
+     * @param  \Armincms\Arminpay\Contracts\Billable $billable 
+     * @return static             
+     */
+    public static function for(Request $request, Billable $billable)
+    {
+        return new static($request, $billable);
+    }
 
-		return $this;
-	}
+    /**
+     * Initialize a transaction via the given Gateway resource.
+     * 
+     * @param  \Armincms\Arminpay\Models\Gateway $gateway 
+     * @return static             
+     */
+    public function via(Gateway $gateway)
+    {
+        $this->transaction->gateway()->associate($gateway);
 
-	public function trackingCode()
-	{
-		return $this->tracking_code;
-	}
+        return new static;
+    }
 
-	public function referenceNumber()
-	{
-		return $this->reference_number;
-	} 
+    /**
+     * Create redirect response.
+     * 
+     * @param  \Armincms\Arminpay\Models\Gateway $gateway 
+     * @return static             
+     */
+    public static function redirect(Gateway $gateway)
+    {
+        $this->via($gateway);
+        $this->transaction->save();
 
-	public function order()
-	{
-		return $this->belongsTo(Order::class, 'tracking_code', 'tracking_code');
-	}
+        $this->gateway()
 
-	public function gateway()
-	{  
-		return app('arminpay.gateway')->resolve($this->gateway);
-	} 
-
-	public function finish(Request $request)
-	{  
-		$status = $this->paymentVerified($request)? Order::SUCCESS : Order::FAILED; 
-
-		return tap($this->markAs($status), function($transaction) {  
-			$transaction->update([
-				'payment_date' => (string) now(),
-				'reference_number' => $transaction->verified() 
-										 ? $this->gateway()->trackingCode() : null
-			]); 
-		}); 
-	} 
-
-	protected function paymentVerified(Request $request)
-	{
-		return (boolean) optional($this->gateway())->verify($request);
-	}
-
-	protected function markAs(string $status)
-	{
-		$this->update(compact('status'));
-
-		return $this;
-	}
-
-	protected function markedAs(string $status)
-	{ 
-		return $this->status === $status;
-	}
-
-	public function verified()
-	{
-		return $this->markedAs(Order::SUCCESS);
-	}
-
-	public function failed()
-	{
-		return $this->markedAs(Order::FAILED);
-	}  
+        return forward_static_call([static::$transaction, 'create'])->gateway->redirect();
+    }
 }

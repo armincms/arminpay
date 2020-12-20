@@ -1,35 +1,71 @@
 <?php
+
 namespace Armincms\Arminpay;
-
-use Armincms\Arminpay\Contracts\Manager;
+ 
+use InvalidArgumentException;
 use Armincms\Arminpay\Contracts\Gateway; 
+use Illuminate\Support\Manager;
 
 
-class GatewayManager implements Manager
-{
-	protected $gateways = [];
+class GatewayManager extends Manager
+{  
+    /**
+     * Create a new driver instance.
+     *
+     * @param  string  $driver
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function createDriver($driver)
+    {
+    	return tap(parent::createDriver($driver), function($driver) {
+    		if(! $driver instanceof Gateway){
+    		 	throw new InvalidArgumentException(
+    		 		"Driver [$driver] do not implements `Armincms\Arminpay\Contracts\Gateway`."
+    		 	);
+    		}
+    	});  
+    } 
 
-	public function resolve(string $name)
-	{  
-		abort_unless($this->has($name), 422, "Invalid Gateway {$name}"); 
+    /**
+     * Get the default driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+    	return 'sandbox';
+    }
 
-		return $this->gateways[$name];
-	} 
+    /**
+     * Create sandbox driver for test payment.
+     * 
+     * @return
+     */
+    public function createSandboxDriver()
+    {
+        return new Drivers\Sandbox;
+    }
 
-	public function register(Gateway $gateway)
-	{
-		$this->gateways[$gateway->name()] = $gateway;
+    /**
+     * Get all of the registered "drivers".
+     *
+     * @return array
+     */
+    public function availableDrivers()
+    {
+        return array_merge(['sandbox'], array_keys($this->customCreators));
+    }
 
-		return $this;
-	} 
-
-	public function has(string $name)
-	{
-		return isset($this->gateways[$name]);
-	}
-
-	public function all()
-	{
-		return $this->gateways;
-	}
+    /**
+     * Determine if the given driver exists.
+     * 
+     * @param  string  $driver 
+     * @return boolean         
+     */
+    public function has(string $driver = null)
+    {
+        return in_array($driver, $this->availableDrivers());
+    }
 }

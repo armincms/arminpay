@@ -1,9 +1,12 @@
-<?php 
-namespace Armincms\Arminpay\Contracts;
+<?php
+
+namespace Armincms\Arminpay\Drivers;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\fields\Text;
+use Armincms\Arminpay\Contracts\{Gateway, Billing}; 
 
-interface Gateway 
+class Sandbox implements Gateway
 { 
 	/**
 	 * Make payment for the given Billing.
@@ -14,7 +17,10 @@ interface Gateway
 	 * 
      * @throws \InvalidArgumentException
 	 */
-	public function pay(Request $request, Billing $billing); 
+	public function pay(Request $request, Billing $billing)
+	{  
+		return redirect($billing->callback());
+	} 
 
 	/**
 	 * Verify the payment for the given Billing.
@@ -25,12 +31,24 @@ interface Gateway
 	 * 
      * @throws \InvalidArgumentException
 	 */
-	public function verify(Request $request, Billing $billing); 
+	public function verify(Request $request, Billing $billing)
+	{
+		return time();
+
+	} 
  
 	/**
 	 * Returns configuration fields.
 	 * 
 	 * @return array 
 	 */
-	public function fields(Request $request): array; 
+	public function fields(Request $request): array
+	{
+		return [
+			Text::make('Merchant ID')
+				->help(__('This is a test gateway. do not use it for commercial payments.'))
+				->required()
+				->rules('required'),
+		];
+	} 
 }

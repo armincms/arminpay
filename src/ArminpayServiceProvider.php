@@ -1,16 +1,17 @@
 <?php
 namespace Armincms\Arminpay;
 
-use Illuminate\Support\ServiceProvider;      
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;  
+use Laravel\Nova\Nova as LaravelNova; 
 
-class ArminpayServiceProvider extends ServiceProvider
+class ArminpayServiceProvider extends AuthServiceProvider
 {     
     /**
-     * Indicates if loading of the provider is deferred.
+     * The policy mappings for the application.
      *
-     * @var bool
+     * @var array
      */
-    protected $defer = false;
+    protected $policies = [];
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -18,10 +19,12 @@ class ArminpayServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    { 
-        $this->routes(); 
-        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang'); 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations'); 
+    {    
+        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');  
+        LaravelNova::serving([$this, 'servingNova']);
+        $this->registerWebComponents();
+        $this->registerPolicies();
     }
 
     /**
@@ -30,92 +33,40 @@ class ArminpayServiceProvider extends ServiceProvider
      * @return void
      */
     public function register()
-    {
-        $this->registerSites(); 
-        $this->registerResources(); 
-
-        $this->app->singleton('arminpay.gateway', function($app) {
+    {  
+        $this->app->singleton('arminpay', function($app) {
             return new GatewayManager($app); 
         });
 
-        $this->app->bind('arminpay.order', function($app) {
-            return new OrderableManager($app);
-        }); 
+        $this->app->afterResolving('arminpay', function($manager) {
+            Events\ResolvingArminpay::dispatch($manager); 
+        });   
+    } 
 
-        $this->app->bind('arminpay.trace', function($app) {
-            return $app['session']->get('arminpay.trace');
-        });  
+    /**
+     * Register any Nova services.
+     *
+     * @return void
+     */
+    public function servingNova()
+    {
+        LaravelNova::resources([
+            Nova\Gateway::class,
+            Nova\Transaction::class,
+        ]);
+    } 
 
-        $this->app->afterResolving('arminpay.gateway', function($manager) { 
-            Gateway::get()->each(function($gateway) use ($manager) { 
-                if($manager->has($gateway->name)) {   
-                    $logo = $gateway->logo['original'] ?? null;
-                    $label = $gateway->title;
-
-                    $active = (boolean) $gateway->isActive();
-
-                    $manager->resolve($gateway->name)->withConfig( 
-                        $gateway->config->merge(compact('logo', 'active', 'label'))->toArray()
-                    ); 
-                }
-            });
+    /**
+     * Register any HttpSite services.
+     * 
+     * @return void
+     */
+    public function registerWebComponents()
+    {
+        app('site')->push('arminpay', function($arminpay) {
+            $arminpay->directory('arminpay');
+            // $arminpay->pushComponent(new Components\Transaction);
+            $arminpay->pushComponent(new Components\Verify);
         });
-    }
-
-    public function registerResources()
-    {
-        $this->app->extend('armin.resource', function($resources) { 
-            $menu = \Menu::get('bigMenu')->add(
-                'arminpay::title.arminpay', ['nickname' => 'arminpay']
-            );
-
-            $resources->register(
-                'gateway', Http\Controllers\GatewayController::class, ['except' => ['create']]
-            );
-            $resources->register(
-                'order', Http\Controllers\OrderController::class
-            );
-
-            return $resources;
-        }); 
-    }
-
-    protected function registerSites()
-    { 
-        $this->app->extend('site', function($manager) {
-            $manager->push('arminpay', function ($lcSite) {
-                $lcSite
-                    ->directory('arminpay') 
-                    ->pushComponent(new Components\InvoiceComponent);
-            });
-
-            return $manager;
-        }); 
-    }
-    
-    public function routes()
-    {
-        app('router')
-            // ->middleware('web')
-            ->prefix('arminpay')
-            ->as('arminpay.')
-            ->namespace(__NAMESPACE__.'\Http\Controllers\Web')
-            ->group(function($router) {
-                $router->post('cart/store', 'CartController@store')->name('cart.store');
-                $router->post('cart/remove', 'CartController@remove')->name('cart.remove'); 
-
-                $router->post('order', 'OrderCreateController')->name(
-                    'order.store'
-                );
-                $router->post('order/pay', 'OrderPaymentController')->name(
-                    'order.pay'
-                );
-                $router->any(
-                    'transaction/{transaction}/verify', 'VerifyController'
-                )->name('transaction.verify');
-                $router->post('account', 'AccountCreateController')->name(
-                    'account.store'
-                ); 
-            }); 
     }
 }

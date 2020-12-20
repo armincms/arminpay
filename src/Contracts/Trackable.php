@@ -1,9 +1,14 @@
-<?php 
-namespace Armincms\Arminpay\Contracts;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+<?php
 
-interface Trackable 
+namespace Armincms\Arminpay\Contracts;
+  
+
+interface Trackable
 {
-	public function trackingCode(); 
+	/**
+	 * Get the unique tracking code.
+	 * 
+	 * @return string
+	 */
+	public function trackingCode();  
 }
