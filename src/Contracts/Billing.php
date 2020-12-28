@@ -11,4 +11,11 @@ interface Billing extends Billable
 	 * @return float
 	 */
 	public function payload(): array; 
+
+	/**
+	 * Get the billing identifier.
+	 * 
+	 * @return string
+	 */
+	public function getIdentifier();
 }

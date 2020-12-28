@@ -144,6 +144,16 @@ class ArminpayTransaction extends Model implements Billing
     } 
 
     /**
+     * Get the billing identifier.
+     * 
+     * @return string
+     */
+    public function getIdentifier()
+    {
+        return $this->tracking_code;
+    }
+
+    /**
      * Verify paymet for the given request
      * 
      * @param  \Illuminate\Http\Request $request 
