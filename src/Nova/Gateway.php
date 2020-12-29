@@ -78,7 +78,7 @@ class Gateway extends Resource
                 ]);
             }),   
 
-            $this->when($request->resourceId, function() use ($request) {
+            $this->when($request->resourceId && ! $request->editing, function() use ($request) {
                 return new Fields\DriverFields($request, $this->driver);
             }),
 
