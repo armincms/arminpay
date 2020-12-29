@@ -43,8 +43,11 @@ class Transaction extends Resource
      */
     public function fields(Request $request)
     {
-        return [  
-            Text::make(__('Reference Number'), 'reference_number')
+        return [   
+            Text::make(__('Tracking Code'), 'tracking_code')
+                ->sortable(),
+
+            Text::make(__('Bank Reference'), 'reference_number')
                 ->sortable(),
 
             Money::make(__('Amount'), 'amount')
