@@ -29,6 +29,17 @@ class GatewayManager extends Manager
     } 
 
     /**
+     * Call a custom driver creator.
+     *
+     * @param  string  $driver
+     * @return mixed
+     */
+    protected function callCustomCreator($driver)
+    {
+        return $this->customCreators[$driver]($this->container, $this->getDriverConfiguration($driver));
+    }
+
+    /**
      * Get the default driver name.
      *
      * @return string
@@ -67,5 +78,42 @@ class GatewayManager extends Manager
     public function has(string $driver = null)
     {
         return in_array($driver, $this->availableDrivers());
+    } 
+
+    /**
+     * Return`s the driver configurations.
+     * 
+     * @param string $driver 
+     * @param array 
+     */
+    public function getDriverConfiguration($driver): array
+    {
+        return (array) $this->config->get("arminpay.{$driver}", []);
+    }
+
+    /**
+     * Set the driver configurations.
+     * 
+     * @param string $driver 
+     * @param $this
+     */
+    public function setDriverConfiguration(string $driver, array $config)
+    {
+        $this->config->set("arminpay.{$driver}", $config);
+
+        return $this;
+    }
+
+    /**
+     * Merge the given configurations.
+     * 
+     * @param  array  $config 
+     * @return $this         
+     */
+    public function mergeConfigurations(array $config)
+    {
+        $this->config->set('arminpay', array_merge((array) $this->config->get('arminpay'), $config));
+
+        return $this;
     }
 }

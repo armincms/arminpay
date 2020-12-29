@@ -38,7 +38,9 @@ class ArminpayServiceProvider extends AuthServiceProvider
             return new GatewayManager($app); 
         });
 
-        $this->app->afterResolving('arminpay', function($manager) {
+        $this->app->afterResolving('arminpay', function($manager) { 
+            $manager->mergeConfigurations(Models\ArminpayGateway::get()->pluck('config', 'driver')->all());
+
             Events\ResolvingArminpay::dispatch($manager); 
         });   
     } 
