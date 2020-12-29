@@ -174,7 +174,7 @@ class ArminpayTransaction extends Model implements Billing
 
     public function closeViaReferenceNumber(string $referenceNumber)
     { 
-        $this->asSuccessed()->fillReferenceNumber($referenceNumber)->save();
+        $this->fillReferenceNumber($referenceNumber)->asSuccessed();
 
         return $this;
     }
@@ -186,7 +186,7 @@ class ArminpayTransaction extends Model implements Billing
 
     public function closeViaException(Exception $exception)
     { 
-        $this->asSuccessed()->fillException($exception)->save();
+        $this->fillException($exception)->asFailed();
 
         return $this;
     }
