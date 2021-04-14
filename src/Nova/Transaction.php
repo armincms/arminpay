@@ -66,7 +66,7 @@ class Transaction extends Resource
                     $this->getDraftValue()  => 'info',
                     $this->getPendingValue()=> 'info',
                     $this->getSuccessValue()=> 'success',
-                    $this->getFailsValue()  => 'danfer', 
+                    $this->getFailsValue()  => 'danger', 
                     $this->getCancellationValue() => 'warning',
                     
                 ]),
