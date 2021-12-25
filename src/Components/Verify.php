@@ -27,14 +27,15 @@ class Verify extends Component
 	]; 
 
 	public function toHtml(Request $request, Document $docuemnt) : string
-	{         
+	{       
+		$transction = ArminpayTransaction::viaCode($request->route('tracking_code'))->firstOrFail();  
 			
 		try {
-			$transction = ArminpayTransaction::viaCode($request->route('tracking_code'))->firstOrFail()->verify($request);
+			$transction->verify($request);
 			
 			return redirect($transction->callback_url);
 		} catch (\Exception $e) {
-			return back()->withErrors([
+			return redirect(app('site')->get('orders')->url($transction->billable->trackingCode()."/billing"))->withErrors([
 				'message' => $e->getMessage(),
 			]);
 		}
