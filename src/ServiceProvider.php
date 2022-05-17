@@ -4,7 +4,7 @@ namespace Armincms\Arminpay;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider;  
 use Laravel\Nova\Nova as LaravelNova; 
 
-class ArminpayServiceProvider extends AuthServiceProvider
+class ServiceProvider extends AuthServiceProvider
 {     
     /**
      * The policy mappings for the application.
