@@ -3,8 +3,7 @@
     "description": "The armincms payment package.",
     "license": "MIT",
     "homepage": "https://armincms.com",
-    "support": { 
-    },
+    "support": {},
     "authors": [
         {
             "name": "Ismail Zare",
@@ -12,28 +11,27 @@
         }
     ],
     "require": {
-        "armincms/nova-targomaan": "~0.1", 
+        "armincms/nova-targomaan": "~0.1",
         "armincms/markable": "~0.1",
-        "armincms/chain": "~0.1" 
+        "armincms/chain": "~0.1"
     },
     "autoload": {
         "psr-4": {
             "Armincms\\Arminpay\\": "src"
-        } 
-    },
-    "extra": { 
-        "laravel" : {
-            "providers" : [ 
-                "Armincms\\Arminpay\\ArminpayServiceProvider"
-            ],
-            "aliases" : {   
-            }
         }
     },
-    "suggest": { 
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Armincms\\Arminpay\\ArminpayServiceProvider"
+            ],
+            "aliases": {}
+        }
     },
+    "suggest": {},
     "config": {
         "sort-packages": true
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "version": "3.0.0"
 }
