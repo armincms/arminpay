@@ -2,49 +2,43 @@
 
 namespace Armincms\Arminpay\Nova;
 
-use Illuminate\Support\Str; 
-use Illuminate\Http\Request; 
-use Laravel\Nova\Fields\{ID, Text, Select, Boolean};
-use Armincms\Fields\{InteractsWithJsonTranslator, Targomaan, Chain};  
-use MediaLibrary;
+use Armincms\Fields\Targomaan;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select; 
 
 class Gateway extends Resource
 {
-    use InteractsWithJsonTranslator;
-
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Armincms\Arminpay\Models\ArminpayGateway::class; 
+    public static $model = \Armincms\Arminpay\Models\ArminpayGateway::class;
 
     /**
      * The relationships that should be eager loaded when performing an index query.
      *
      * @var array
      */
-    public static $with = [ 
-    ];
+    public static $with = [];
 
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
-        'id',
-    ];
-
+    public static $search = ["id"];
 
     /**
      * The JSON columns that should be searched.
      *
      * @var array
      */
-    public static $searchJson = [
-        'name',
-    ];
+    public static $searchJson = ["name"];
 
     /**
      * Get the fields displayed by the resource.
@@ -55,51 +49,57 @@ class Gateway extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable(),   
+            ID::make()->sortable(),
 
-            Chain::as('gateway', function() {
-                return [
-                    Select::make(__('Driver'), 'driver')
-                        ->options($this->drivers())
-                        ->required()
-                        ->rules('required'),
-                ];
-            }),
+            Select::make(__("Gateway Driver"), "driver")
+                ->options(static::drivers())
+                ->readonly()
+                ->displayUsingLabels(),
 
             Targomaan::make([
-                Text::make(__('Name'), 'name')
+                Text::make(__("Gateway Name"), "name")
                     ->required()
-                    ->rules('required')   
-            ]),   
+                    ->rules("required")
+                    ->help(__("This name using to display to the user.")),
+            ]),
 
-            Chain::with('gateway', function($request) {
-                return $this->filter([
-                    new Fields\DriverFields($request, $request->get('driver', $this->driver))
-                ]);
-            }),   
+            new Fields\DriverFields($request, $this->driver),
 
-            $this->when($request->resourceId && ! $request->editing, function() use ($request) {
-                return new Fields\DriverFields($request, $this->driver);
-            }),
+            Boolean::make(__("Enabled"), "enabled"),
 
-            Boolean::make(__('Enabled'), 'enabled'),
-
-            $this->imageField('Logo', 'logo')
-                    ->conversionOnPreview('common-thumbnail') 
-                    ->conversionOnDetailView('common-thumbnail') 
-                    ->conversionOnIndexView('common-thumbnail'),
+            $this->medialibrary(__("Logo")),
         ];
-    }   
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            Actions\NewGateway::make()
+                ->standalone()
+                ->onlyOnIndex()
+                ->canSee(function ($request) {
+                    return optional($request->user())->can('create', static::newModel());
+                }),
+        ];
+    }
 
     /**
      * Returns array of gateway drivers.
-     * 
+     *
      * @return array
      */
-    public function drivers()
+    public static function drivers()
     {
-        return collect(app('arminpay')->availableDrivers())->flip()->map(function($label, $driver) {
-            return __(Str::title($driver));
-        });
-    } 
+        return collect(app("arminpay")->availableDrivers())
+            ->flip()
+            ->map(function ($label, $driver) {
+                return __(Str::title($driver));
+            });
+    }
 }

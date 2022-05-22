@@ -33,11 +33,16 @@ class DriverFields extends MergeValue
 
             return collect($fields)->each(function($field) { 
                 $field->fillUsing(function($request, $model, $attribute, $requestAttribute) {
-                    $model->setConfig($attribute, $request->get($requestAttribute));
+                    if ($request->exists($attribute)) {
+                        $model->setAttribute(
+                            "config->{$attribute}", 
+                            $request->get($requestAttribute)
+                        );
+                    } 
                 });
 
                 $field->resolveUsing(function($value, $resource, $attribute) {
-                    return $resource->getConfig($attribute);
+                    return $resource->config($attribute);
                 });
             });
         }

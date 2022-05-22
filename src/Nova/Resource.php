@@ -2,11 +2,14 @@
 
 namespace Armincms\Arminpay\Nova;
 
+use Armincms\Contract\Nova\Fields;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Armincms\Nova\Resource as NovaResource;
+use Laravel\Nova\Resource as NovaResource;
 
 abstract class Resource extends NovaResource
 {  
+    use Fields;
+    
     /**
      * The logical group associated with the resource.
      *

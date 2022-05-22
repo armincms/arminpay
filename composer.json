@@ -12,8 +12,7 @@
     ],
     "require": {
         "armincms/nova-targomaan": "^1.0",
-        "armincms/markable": "^1.0",
-        "armincms/chain": "^0.1"
+        "armincms/markable": "^1.0"
     },
     "autoload": {
         "psr-4": {

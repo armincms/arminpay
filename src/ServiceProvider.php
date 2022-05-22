@@ -1,31 +1,20 @@
 <?php
 namespace Armincms\Arminpay;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider;  
-use Laravel\Nova\Nova as LaravelNova; 
+use Illuminate\Contracts\Support\DeferrableProvider;  
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider; 
+use Laravel\Nova\Nova; 
 
-class ServiceProvider extends AuthServiceProvider
+class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
 {     
     /**
      * The policy mappings for the application.
      *
      * @var array
      */
-    protected $policies = [];
-
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     * 
-     * @return void
-     */
-    public function boot()
-    {    
-        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');  
-        LaravelNova::serving([$this, 'servingNova']);
-        $this->registerWebComponents();
-        $this->registerPolicies();
-    }
+    protected $policies = [
+        Models\Course::class => Policies\Course::class, 
+    ]; 
 
     /**
      * Register the service provider.
@@ -33,13 +22,23 @@ class ServiceProvider extends AuthServiceProvider
      * @return void
      */
     public function register()
-    {  
+    {   
+        $this->mergeConfigFrom(__DIR__.'/config.php', 'arminpay');
+        $this->registerPolicies();
+        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');  
+        Nova::resources(config('arminpay.resources'));
+
         $this->app->singleton('arminpay', function($app) {
             return new GatewayManager($app); 
         });
 
-        $this->app->afterResolving('arminpay', function($manager) { 
-            $manager->mergeConfigurations(Models\ArminpayGateway::get()->pluck('config', 'driver')->all());
+        $this->app->afterResolving('arminpay', function($manager) {  
+            $resource = config('arminpay.resources.'. \Armincms\Arminpay\Nova\Gateway::class);
+
+            $manager->mergeConfigurations(with($resource::newModel(), function($gateway) {
+                return $gateway->get()->pluck('config', 'driver')->all();
+            }));
 
             Events\ResolvingArminpay::dispatch($manager); 
         });   
@@ -52,23 +51,29 @@ class ServiceProvider extends AuthServiceProvider
      */
     public function servingNova()
     {
-        LaravelNova::resources([
-            Nova\Gateway::class,
-            Nova\Transaction::class,
-        ]);
-    } 
+        
+    }  
 
     /**
-     * Register any HttpSite services.
-     * 
-     * @return void
+     * Get the services provided by the provider.
+     *
+     * @return array
      */
-    public function registerWebComponents()
+    public function provides()
     {
-        app('site')->push('arminpay', function($arminpay) {
-            $arminpay->directory('arminpay');
-            // $arminpay->pushComponent(new Components\Transaction);
-            $arminpay->pushComponent(new Components\Verify);
-        });
+        return ['arminpay'];
+    }
+
+    /**
+     * Get the events that trigger this service provider to register.
+     *
+     * @return array
+     */
+    public function when()
+    {
+        return [
+            \Illuminate\Console\Events\ArtisanStarting::class,
+            \Laravel\Nova\Events\ServingNova::class,
+        ];
     }
 }
