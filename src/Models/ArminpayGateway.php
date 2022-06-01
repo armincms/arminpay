@@ -10,8 +10,10 @@ use Armincms\Targomaan\Concerns\InteractsWithTargomaan;
 class ArminpayGateway extends Model implements HasMedia
 {   
     use Configurable;
+    use HasCheckout;
     use InteractsWithMedia;
     use InteractsWithTargomaan;
+    use InteractsWithTransactions;
     
     /**
      * Indicates if the model should be timestamped.

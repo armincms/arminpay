@@ -4,14 +4,24 @@ namespace Armincms\Arminpay\Models;
  
 use Exception;
 use Illuminate\Http\Request;
-use Zareismail\Markable\{Markable, HasPending, HasDraft};
-use Armincms\Arminpay\Contracts\Billing;
-use Armincms\Arminpay\Concerns\HasTrackingCode;
-use Armincms\Arminpay\Concerns\{HasFails, HasSuccess, HasCancellation};
+use Armincms\Arminpay\Contracts\Billing; 
+use Armincms\Arminpay\Concerns\HasFails;
+use Armincms\Arminpay\Concerns\HasSuccess;
+use Armincms\Arminpay\Concerns\HasCancellation;
+use Armincms\Contract\Concerns\GeneratesTrackingCode;
+use Zareismail\Markable\Markable;
+use Zareismail\Markable\HasPending;
+use Zareismail\Markable\HasDraft;
 
 class ArminpayTransaction extends Model implements Billing
 {    
-    use Markable, HasPending, HasDraft, HasFails, HasSuccess, HasCancellation, HasTrackingCode;
+    use GeneratesTrackingCode; 
+    use HasCancellation;
+    use HasDraft;
+    use HasFails;
+    use HasPending;
+    use HasSuccess;
+    use Markable;
 
     /**
      * The primary key for the model.
@@ -130,7 +140,7 @@ class ArminpayTransaction extends Model implements Billing
      */
     public function callback(): string
     {
-        return app('site')->get('arminpay')->url('verify/'. $this->trackingCode());
+        return route('arminpay.verify', $this->trackingCode());
     }
 
     /**
@@ -166,9 +176,7 @@ class ArminpayTransaction extends Model implements Billing
         try {
             return $this->closeViaReferenceNumber($this->gateway->createDriver()->verify($request, $this)); 
         } catch (Exception $exception) {
-            $this->closeViaException($exception);
-
-            throw $exception;             
+            $this->closeViaException($exception);          
         }
     }
 

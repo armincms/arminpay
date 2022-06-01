@@ -32,7 +32,7 @@ class Transaction extends Resource
      * @var array
      */
     public static $search = [
-        'reference_number', 'amount'
+        'reference_number', 'amount', 'tracking_code'
     ]; 
 
     /**
@@ -44,16 +44,12 @@ class Transaction extends Resource
     public function fields(Request $request)
     {
         return [   
-            Text::make(__('Tracking Code'), 'tracking_code')
-                ->sortable(),
+            Text::make(__('Tracking Code'), 'tracking_code')->sortable(),
 
             Text::make(__('Bank Reference'), 'reference_number')
                 ->sortable(),
 
-            Money::make(__('Amount'), 'amount')
-                ->currency($this->currency)
-                ->exceptOnForms()
-                ->sortable(), 
+            $this->currencyField(__('Amount'), 'amount'),
 
             MorphTo::make(__('Billlable'), 'billable')
                 ->types(Helper::billableResources($request)->all()),

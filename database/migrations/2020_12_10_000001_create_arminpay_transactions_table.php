@@ -15,11 +15,11 @@ class CreateArminpayTransactionsTable extends Migration
     public function up()
     {
         Schema::create('arminpay_transactions', function (Blueprint $table) { 
-            $table->unsignedBigInteger('gateway_id'); 
+            $table->foreignId('gateway_id')->constrained('arminpay_gateways'); 
             $table->morphs('billable'); 
             $table->longPrice('amount');
             $table->string('currency')->default('IRR');
-            $table->enum('marked_as', Helper::statuses())->default(head(Helper::statuses()));
+            $table->markable();
             $table->string('tracking_code')->unique()->primary();
             $table->string('callback_url')->nullable();
             $table->string('reference_number')->nullable();
@@ -27,11 +27,6 @@ class CreateArminpayTransactionsTable extends Migration
             $table->json('payload')->nullable();
             $table->softDeletes(); 
             $table->timestamps(); 
-
-            $table
-                ->foreign('gateway_id')
-                ->references('id')
-                ->on('arminpay_gateways');
         });
     }
 

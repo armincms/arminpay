@@ -1,19 +1,17 @@
 <?php
 namespace Armincms\Arminpay;
 
-use Illuminate\Contracts\Support\DeferrableProvider;  
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider; 
 use Laravel\Nova\Nova; 
 
-class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
+class ServiceProvider extends AuthServiceProvider
 {     
     /**
      * The policy mappings for the application.
      *
      * @var array
      */
-    protected $policies = [
-        Models\Course::class => Policies\Course::class, 
+    protected $policies = [ 
     ]; 
 
     /**
@@ -21,11 +19,10 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      *
      * @return void
      */
-    public function register()
+    public function boot()
     {   
         $this->mergeConfigFrom(__DIR__.'/config.php', 'arminpay');
-        $this->registerPolicies();
-        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
+        $this->registerPolicies(); 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');  
         Nova::resources(config('arminpay.resources'));
 
@@ -41,39 +38,10 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
             }));
 
             Events\ResolvingArminpay::dispatch($manager); 
-        });   
-    } 
+        });  
 
-    /**
-     * Register any Nova services.
-     *
-     * @return void
-     */
-    public function servingNova()
-    {
-        
+        app('router')->middleware('web')->prefix('_arminpay')->group(function($router) {
+            $router->any('verify/{token}', Http\Controllers\VerifyController::class)->name('arminpay.verify');
+        });
     }  
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['arminpay'];
-    }
-
-    /**
-     * Get the events that trigger this service provider to register.
-     *
-     * @return array
-     */
-    public function when()
-    {
-        return [
-            \Illuminate\Console\Events\ArtisanStarting::class,
-            \Laravel\Nova\Events\ServingNova::class,
-        ];
-    }
 }
