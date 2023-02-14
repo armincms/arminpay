@@ -44,6 +44,8 @@ class DriverFields extends MergeValue
                 $field->resolveUsing(function ($value, $resource, $attribute) {
                     return $resource->config($attribute);
                 });
+
+                $field->hideFromIndex();
             });
         }
 
