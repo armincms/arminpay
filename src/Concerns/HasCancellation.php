@@ -1,10 +1,9 @@
 <?php
 
 namespace Armincms\Arminpay\Concerns;
- 
 
-trait HasCancellation 
-{    
+trait HasCancellation
+{
     /**
      * Mark the model with the "cancelled" value.
      *
@@ -13,13 +12,13 @@ trait HasCancellation
     public function asCancelled()
     {
         return $this->markAs($this->getCancellationValue());
-    } 
+    }
 
     /**
      * Determine if the value of the model's "marked as" attribute is equal to the "cancelled" value.
-     * 
-     * @param  string $value 
-     * @return bool       
+     *
+     * @param  string  $value
+     * @return bool
      */
     public function isCancelled()
     {
@@ -28,18 +27,18 @@ trait HasCancellation
 
     /**
      * Query the model's `marked as` attribute with the "cancelled" value.
-     * 
-     * @param  \Illuminate\Database\Eloquent\Builder $query  
-     * @return \Illuminate\Database\Eloquent\Builder       
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeCancelled($query)
     {
-        return $this->mark($this->getCancellationValue());
+        return $query->mark($this->getCancellationValue());
     }
 
     /**
      * Set the value of the "marked as" attribute as "cancelled" value.
-     * 
+     *
      * @return $this
      */
     public function setCancellation()

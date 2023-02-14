@@ -2,9 +2,9 @@
 
 namespace Armincms\Arminpay;
 
-use InvalidArgumentException;
 use Armincms\Arminpay\Contracts\Gateway;
 use Illuminate\Support\Manager;
+use InvalidArgumentException;
 
 class GatewayManager extends Manager
 {
@@ -36,7 +36,7 @@ class GatewayManager extends Manager
     protected function callCustomCreator($driver)
     {
         return $this->customCreators[$driver](
-            $this->container, 
+            $this->container,
             $this->getDriverConfiguration($driver)
         );
     }
@@ -48,7 +48,7 @@ class GatewayManager extends Manager
      */
     public function getDefaultDriver()
     {
-        return "sandbox";
+        return 'sandbox';
     }
 
     /**
@@ -68,14 +68,14 @@ class GatewayManager extends Manager
      */
     public function availableDrivers()
     {
-        return array_merge(["sandbox"], array_keys($this->customCreators));
+        return array_merge(['sandbox'], array_keys($this->customCreators));
     }
 
     /**
      * Determine if the given driver exists.
      *
      * @param  string  $driver
-     * @return boolean
+     * @return bool
      */
     public function has(string $driver = null)
     {
@@ -85,7 +85,7 @@ class GatewayManager extends Manager
     /**
      * Return`s the driver configurations.
      *
-     * @param string $driver
+     * @param  string  $driver
      * @param array
      */
     public function getDriverConfiguration($driver): array
@@ -96,7 +96,7 @@ class GatewayManager extends Manager
     /**
      * Set the driver configurations.
      *
-     * @param string $driver
+     * @param  string  $driver
      * @param $this
      */
     public function setDriverConfiguration(string $driver, array $config)
@@ -115,8 +115,8 @@ class GatewayManager extends Manager
     public function mergeConfigurations(array $config)
     {
         $this->config->set(
-            "arminpay",
-            array_merge((array) $this->config->get("arminpay"), $config)
+            'arminpay',
+            array_merge((array) $this->config->get('arminpay'), $config)
         );
 
         return $this;

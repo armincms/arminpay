@@ -5,11 +5,11 @@ namespace Armincms\Arminpay\Models;
 use Illuminate\Database\Eloquent\Collection;
 
 class TransactionCollection extends Collection
-{    
+{
     /**
      * Filters successful transctions.
-     * 
-     * @return 
+     *
+     * @return
      */
     public function successed()
     {

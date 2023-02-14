@@ -1,18 +1,22 @@
 <?php
+
 namespace Armincms\Arminpay;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider; 
-use Laravel\Nova\Nova; 
+use Armincms\Arminpay\Nova\Gateway;
+use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
+use Laravel\Nova\Nova;
 
-class ServiceProvider extends AuthServiceProvider
-{     
+class ServiceProvider extends LaravelServiceProvider
+{
     /**
-     * The policy mappings for the application.
+     * Register any application services.
      *
-     * @var array
+     * @return void
      */
-    protected $policies = [ 
-    ]; 
+    public function register()
+    {
+        $this->app->singleton('arminpay', fn ($app) => new GatewayManager($app));
+    }
 
     /**
      * Register the service provider.
@@ -20,28 +24,23 @@ class ServiceProvider extends AuthServiceProvider
      * @return void
      */
     public function boot()
-    {   
-        $this->mergeConfigFrom(__DIR__.'/config.php', 'arminpay');
-        $this->registerPolicies(); 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');  
-        Nova::resources(config('arminpay.resources'));
+    {
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        Nova::resources(config('arminpay.resources', [
+            \Armincms\Arminpay\Nova\Gateway::class,
+            \Armincms\Arminpay\Nova\Transaction::class,
+        ]));
 
-        $this->app->singleton('arminpay', function($app) {
-            return new GatewayManager($app); 
+        $this->app->afterResolving('arminpay', function($manager) {
+            $resource = config('arminpay.resources.'. Gateway::class, Gateway::class);
+
+            $manager->mergeConfigurations($resource::newModel()->get()->pluck('config', 'driver')->toArray());
+
+            Events\ResolvingArminpay::dispatch($manager);
         });
-
-        $this->app->afterResolving('arminpay', function($manager) {  
-            $resource = config('arminpay.resources.'. \Armincms\Arminpay\Nova\Gateway::class);
-
-            $manager->mergeConfigurations(with($resource::newModel(), function($gateway) {
-                return $gateway->get()->pluck('config', 'driver')->all();
-            }));
-
-            Events\ResolvingArminpay::dispatch($manager); 
-        });  
 
         app('router')->middleware('web')->prefix('_arminpay')->group(function($router) {
             $router->any('verify/{token}', Http\Controllers\VerifyController::class)->name('arminpay.verify');
         });
-    }  
+    }
 }

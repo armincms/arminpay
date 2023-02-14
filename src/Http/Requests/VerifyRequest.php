@@ -2,10 +2,10 @@
 
 namespace Armincms\Arminpay\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest; 
+use Illuminate\Foundation\Http\FormRequest;
 
 class VerifyRequest extends FormRequest
-{       
+{
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,5 +24,5 @@ class VerifyRequest extends FormRequest
     public function rules()
     {
         return [];
-    }  
+    }
 }

@@ -2,13 +2,14 @@
 
 namespace Armincms\Arminpay\Nova;
 
-use Armincms\Fields\Targomaan;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Select; 
+use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Query\Search\SearchableJson;
 
 class Gateway extends Resource
 {
@@ -27,66 +28,83 @@ class Gateway extends Resource
     public static $with = [];
 
     /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
-    public static $search = ["id"];
-
-    /**
-     * The JSON columns that should be searched.
-     *
-     * @var array
-     */
-    public static $searchJson = ["name"];
-
-    /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
-    public function fields(Request $request)
+    public function fields(NovaRequest $request)
     {
         return [
             ID::make()->sortable(),
 
-            Select::make(__("Gateway Driver"), "driver")
+            Select::make(__('Gateway Driver'), 'driver')
                 ->options(static::drivers())
                 ->readonly()
                 ->displayUsingLabels(),
 
-            Targomaan::make([
-                Text::make(__("Gateway Name"), "name")
-                    ->required()
-                    ->rules("required")
-                    ->help(__("This name using to display to the user.")),
-            ]),
+            ...collect(app('application.locales'))->flatMap(function ($locale) {
+                return [
+                    Text::make(__("Gateway Name - [{$locale['name']}]"), "name->{$locale['locale']}")
+                        ->required()
+                        ->onlyOnForms()
+                        ->help($locale['name']),
+                ];
+            }),
 
             new Fields\DriverFields($request, $this->driver),
 
-            Boolean::make(__("Enabled"), "enabled"),
+            Boolean::make(__('Enabled'), 'enabled'),
 
-            $this->medialibrary(__("Logo")),
+            $this->medialibrary(__('Logo')),
         ];
     }
 
     /**
-     * Get the actions available for the resource.
+     * Get the searchable columns for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function actions(Request $request)
+    public static function searchableColumns()
+    {
+        return ['id', new SearchableJson('name')];
+    }
+
+    /**
+     * Get the actions available on the entity.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function actions(NovaRequest $request)
     {
         return [
-            Actions\NewGateway::make()
+            Actions\CreateGateway::make()
                 ->standalone()
                 ->onlyOnIndex()
-                ->canSee(function ($request) {
-                    return optional($request->user())->can('create', static::newModel());
-                }),
+                ->canSee(fn ($request) => optional($request->user())->can('create', static::newModel())),
         ];
+    }
+
+    /**
+     * Get the value that should be displayed to represent the resource.
+     *
+     * @return string
+     */
+    public function title()
+    {
+        return $this->resource->title();
+    }
+
+    /**
+     * Determine if the current user can create new resources.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
     }
 
     /**
@@ -96,10 +114,8 @@ class Gateway extends Resource
      */
     public static function drivers()
     {
-        return collect(app("arminpay")->availableDrivers())
+        return collect(app('arminpay')->availableDrivers())
             ->flip()
-            ->map(function ($label, $driver) {
-                return __(Str::title($driver));
-            });
+            ->map(fn ($label, $driver) => __(Str::title($driver)));
     }
 }

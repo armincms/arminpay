@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Armincms\Arminpay\Helper;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateArminpayTransactionsTable extends Migration
 {
@@ -14,19 +13,20 @@ class CreateArminpayTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('arminpay_transactions', function (Blueprint $table) { 
-            $table->foreignId('gateway_id')->constrained('arminpay_gateways'); 
-            $table->morphs('billable'); 
+        Schema::create('arminpay_transactions', function (Blueprint $table) {
+            $table->foreignId('gateway_id')->constrained('arminpay_gateways');
+            $table->morphs('billable');
             $table->longPrice('amount');
             $table->string('currency')->default('IRR');
             $table->markable();
             $table->string('tracking_code')->unique()->primary();
-            $table->string('callback_url')->nullable();
+            $table->string('success_callback')->nullable();
+            $table->string('fail_callback')->nullable();
             $table->string('reference_number')->nullable();
             $table->longText('exception')->nullable();
             $table->json('payload')->nullable();
-            $table->softDeletes(); 
-            $table->timestamps(); 
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

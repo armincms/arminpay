@@ -2,28 +2,32 @@
 
 namespace Armincms\Arminpay\Nova;
 
-use Illuminate\Support\Str; 
-use Illuminate\Http\Request; 
-use Laravel\Nova\Fields\{Code, Badge, Text, Number, DateTime, BelongsTo, MorphTo};   
-use Armincms\Nova\Fields\Money;
 use Armincms\Arminpay\Helper;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Laravel\Nova\Fields\Badge;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\MorphTo;
+use Laravel\Nova\Fields\Text;
 
 class Transaction extends Resource
-{ 
+{
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Armincms\Arminpay\Models\ArminpayTransaction::class; 
+    public static $model = \Armincms\Arminpay\Models\ArminpayTransaction::class;
 
     /**
      * The relationships that should be eager loaded when performing an index query.
      *
      * @var array
      */
-    public static $with = [ 
-        'billable', 'gateway'
+    public static $with = [
+        'billable', 'gateway',
     ];
 
     /**
@@ -32,8 +36,8 @@ class Transaction extends Resource
      * @var array
      */
     public static $search = [
-        'reference_number', 'amount', 'tracking_code'
-    ]; 
+        'reference_number', 'amount', 'tracking_code',
+    ];
 
     /**
      * Get the fields displayed by the resource.
@@ -43,38 +47,31 @@ class Transaction extends Resource
      */
     public function fields(Request $request)
     {
-        return [   
-            Text::make(__('Tracking Code'), 'tracking_code')->sortable(),
+        return [
+            Text::make(__('Tracking Code'), 'tracking_code')->sortable()->filterable(),
 
-            Text::make(__('Bank Reference'), 'reference_number')
-                ->sortable(),
+            Text::make(__('Bank Reference'), 'reference_number')->sortable()->filterable(),
 
             $this->currencyField(__('Amount'), 'amount'),
 
-            MorphTo::make(__('Billlable'), 'billable')
-                ->types(Helper::billableResources($request)->all()),
+            MorphTo::make(__('Billlable'), 'billable')->types(Helper::billableResources($request)->all())->filterable(),
 
-            BelongsTo::make(__('Gateway'), 'gateway', Gateway::class)
-                ->sortable(),
+            BelongsTo::make(__('Gateway'), 'gateway', Gateway::class)->sortable()->filterable(),
 
-            Badge::make(__('Status'), 'marked_as') 
-                ->map([
-                    $this->getDraftValue()  => 'info',
-                    $this->getPendingValue()=> 'info',
-                    $this->getSuccessValue()=> 'success',
-                    $this->getFailsValue()  => 'danger', 
-                    $this->getCancellationValue() => 'warning',
-                    
-                ]),
+            Badge::make(__('Status'), 'marked_as')->label(fn ($label) => __(Str::title($label)))->filterable()->map([
+                $this->getDraftValue() => 'info',
+                $this->getPendingValue() => 'info',
+                $this->getSuccessValue() => 'success',
+                $this->getFailsValue() => 'danger',
+                $this->getCancellationValue() => 'warning',
 
-            DateTime::make(__('Payment Date'), 'created_at')
-                ->sortable(),
+            ]),
 
-            $this->when(! is_null($this->exception), function() {
-                return Code::make(__('Exception'), 'exception')->onlyOnDetail();
-            }),
+            DateTime::make(__('Payment Date'), 'created_at')->sortable()->filterable(),
+
+            $this->when(! is_null($this->exception), fn () => Code::make(__('Exception'), 'exception')->onlyOnDetail()),
         ];
-    }   
+    }
 
     /**
      * Determine if the current user can create new resources.
@@ -83,9 +80,9 @@ class Transaction extends Resource
      * @return bool
      */
     public static function authorizeToCreate(Request $request)
-    { 
+    {
         return false;
-    }  
+    }
 
     /**
      * Determine if the current user can create new resources.
@@ -94,7 +91,7 @@ class Transaction extends Resource
      * @return bool
      */
     public static function authorizedToCreate(Request $request)
-    { 
+    {
         return false;
     }
 
@@ -109,7 +106,7 @@ class Transaction extends Resource
     public function authorizedToUpdate(Request $request)
     {
         return false;
-    } 
+    }
 
     /**
      * Determine if the current user can update the given resource or throw an exception.
@@ -122,5 +119,5 @@ class Transaction extends Resource
     public function authorizeToUpdate(Request $request)
     {
         return false;
-    } 
+    }
 }
