@@ -43,11 +43,13 @@ class Gateway extends Resource
                 ->readonly()
                 ->displayUsingLabels(),
 
-            ...collect(app('application.locales'))->flatMap(function ($locale) {
+            ...collect(app('application.locales'))->flatMap(function ($locale, $index) {
                 return [
                     Text::make(__("Gateway Name - [{$locale['name']}]"), "name->{$locale['locale']}")
                         ->required()
                         ->onlyOnForms()
+                        ->showOnDetail(app()->getLocale() === $locale['locale'])
+                        ->showOnIndex(app()->getLocale() === $locale['locale'])
                         ->help($locale['name']),
                 ];
             }),

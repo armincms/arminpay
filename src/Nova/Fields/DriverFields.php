@@ -4,6 +4,7 @@ namespace Armincms\Arminpay\Nova\Fields;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\MergeValue;
+use Laravel\Nova\Fields\Boolean;
 
 class DriverFields extends MergeValue
 {
@@ -41,8 +42,10 @@ class DriverFields extends MergeValue
                     }
                 });
 
-                $field->resolveUsing(function ($value, $resource, $attribute) {
-                    return $resource->config($attribute);
+                $field->resolveUsing(function ($value, $resource, $attribute) use ($field) {
+                    $value = $resource->config($attribute);
+
+                    return $field instanceof Boolean ? boolval($value) : $value;
                 });
 
                 $field->hideFromIndex();
