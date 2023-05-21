@@ -229,6 +229,7 @@ class ArminpayTransaction extends Model implements Billing
             'trackingCode' => $this->trackingCode(),
             'referenceNumber' => $this->referenceNumber(),
             'state' => $this->marked_as,
+            'date' => $this->created_at->format('Y-m-d h:m:s'),
         ];
     }
 }
